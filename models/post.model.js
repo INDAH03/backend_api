@@ -1,12 +1,16 @@
-const { DataTypes } = require('sequelize');
-const db = require('../config/database');
-const User = require('./user.model');
+module.exports = (sequelize, DataTypes) => {
+  const Post = sequelize.define('Post', {
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    }
+  });
 
-const Post = db.define('Post', {
-  content: DataTypes.TEXT,
-});
+Post.associate = function(models) {
+  Post.belongsTo(models.User, { foreignKey: 'authorId' });
+  Post.hasMany(models.Like, { foreignKey: 'postId', onDelete: 'CASCADE' });
+  Post.hasMany(models.Bookmark, { foreignKey: 'postId' });
+};
 
-Post.belongsTo(User, { foreignKey: 'authorId' });
-User.hasMany(Post, { foreignKey: 'authorId' });
-
-module.exports = Post;
+  return Post;
+};
